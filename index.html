@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            margin-bottom: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #1e3c72;
+            border-color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Portfolio View */
+        .portfolio-section {
+            display: none;
+        }
+
+        .portfolio-section.active {
+            display: block;
+        }
+
+        .hero {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(30, 60, 114, 0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 15px 30px rgba(30, 60, 114, 0.3);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .hero .age {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .hero .bio {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #1e3c72;
+            font-weight: 500;
+        }
+
+        /* Admin Panel */
+        .admin-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-header h2 {
+            font-size: 2.5rem;
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(30, 60, 114, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #1e3c72;
+            border: 2px solid #e0e7ff;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e7ff;
+            transform: translateY(-1px);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 25px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.3rem;
+            }
+
+            .admin-section {
+                padding: 25px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .nav-tab {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showSection('portfolio')">
+            🏠 Portfolio View
+        </div>
+        <div class="nav-tab" onclick="showSection('admin')">
+            ⚙️ Admin Panel
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Portfolio Section -->
+        <div id="portfolio" class="portfolio-section active">
+            <div class="hero">
+                <div class="profile-image" id="profileDisplay">
+                    👤
+                </div>
+                <div class="hero-content">
+                    <h1 id="nameDisplay">Add Your Name</h1>
+                    <div class="subtitle" id="titleDisplay">Add Your Title</div>
+                    <div class="age" id="ageDisplay">Age: Not Set</div>
+                    <div class="bio" id="bioDisplay">Add your bio in the admin panel to tell your story...</div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📋 Personal Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value" id="fullNameDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Age</span>
+                        <span class="info-value" id="ageInfoDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Location</span>
+                        <span class="info-value" id="locationDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Profession</span>
+                        <span class="info-value" id="professionDisplay">Not Set</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>📞 Contact Details</h3>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value" id="emailDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Phone</span>
+                        <span class="info-value" id="phoneDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Website</span>
+                        <span class="info-value" id="websiteDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">LinkedIn</span>
+                        <span class="info-value" id="linkedinDisplay">Not Set</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>🎯 Skills & Expertise</h3>
+                    <div class="info-item">
+                        <span class="info-label">Primary Skills</span>
+                        <span class="info-value" id="skillsDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Experience</span>
+                        <span class="info-value" id="experienceDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Education</span>
+                        <span class="info-value" id="educationDisplay">Not Set</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Languages</span>
+                        <span class="info-value" id="languagesDisplay">Not Set</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel Section -->
+        <div id="admin" class="admin-section">
+            <div class="admin-header">
+                <h2>⚙️ Admin Panel</h2>
+                <p>Update your portfolio information</p>
+            </div>
+
+            <form id="portfolioForm">
+                <div class="form-grid">
+                    <!-- Personal Information -->
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: #1e3c72;">📋 Personal Information</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="title">Professional Title *</label>
+                            <input type="text" id="title" class="form-input" placeholder="e.g., Web Developer, Designer" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="age">Age</label>
+                            <input type="number" id="age" class="form-input" placeholder="Enter your age" min="16" max="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="location">Location</label>
+                            <input type="text" id="location" class="form-input" placeholder="City, Country">
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: #1e3c72;">📞 Contact Information</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" id="email" class="form-input" placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input type="tel" id="phone" class="form-input" placeholder="+1 (555) 123-4567">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="website">Website</label>
+                            <input type="url" id="website" class="form-input" placeholder="https://your-website.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="linkedin">LinkedIn Profile</label>
+                            <input type="url" id="linkedin" class="form-input" placeholder="https://linkedin.com/in/yourprofile">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Information -->
+                <div class="form-grid">
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: #1e3c72;">🎯 Professional Information</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="skills">Primary Skills</label>
+                            <input type="text" id="skills" class="form-input" placeholder="JavaScript, React, Node.js, etc.">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="experience">Years of Experience</label>
+                            <input type="text" id="experience" class="form-input" placeholder="e.g., 3+ years">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: #1e3c72;">🎓 Additional Information</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="education">Education</label>
+                            <input type="text" id="education" class="form-input" placeholder="University, Degree, Year">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="languages">Languages</label>
+                            <input type="text" id="languages" class="form-input" placeholder="English, Sinhala, Tamil, etc.">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bio Section -->
+                <div class="form-group">
+                    <label class="form-label" for="bio">Professional Bio</label>
+                    <textarea id="bio" class="form-input form-textarea" placeholder="Write a brief description about yourself, your experience, and what you do..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Portfolio
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        🗑️ Clear All
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="loadSampleData()">
+                        📝 Load Sample
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Portfolio data storage
+        let portfolioData = {
+            fullName: '',
+            title: '',
+            age: '',
+            location: '',
+            email: '',
+            phone: '',
+            website: '',
+            linkedin: '',
+            skills: '',
+            experience: '',
+            education: '',
+            languages: '',
+            bio: ''
+        };
+
+        // DOM elements
+        const form = document.getElementById('portfolioForm');
+        const notification = document.getElementById('notification');
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.portfolio-section, .admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            savePortfolio();
+        });
+
+        function savePortfolio() {
+            // Get all form values
+            const formData = new FormData(form);
+            
+            portfolioData = {
+                fullName: document.getElementById('fullName').value,
+                title: document.getElementById('title').value,
+                age: document.getElementById('age').value,
+                location: document.getElementById('location').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                website: document.getElementById('website').value,
+                linkedin: document.getElementById('linkedin').value,
+                skills: document.getElementById('skills').value,
+                experience: document.getElementById('experience').value,
+                education: document.getElementById('education').value,
+                languages: document.getElementById('languages').value,
+                bio: document.getElementById('bio').value
+            };
+
+            updatePortfolioDisplay();
+            showNotification('Portfolio updated successfully! 🎉');
+        }
+
+        function updatePortfolioDisplay() {
+            // Update main hero section
+            document.getElementById('nameDisplay').textContent = portfolioData.fullName || 'Add Your Name';
+            document.getElementById('titleDisplay').textContent = portfolioData.title || 'Add Your Title';
+            document.getElementById('ageDisplay').textContent = portfolioData.age ? `Age: ${portfolioData.age}` : 'Age: Not Set';
+            document.getElementById('bioDisplay').textContent = portfolioData.bio || 'Add your bio in the admin panel to tell your story...';
+
+            // Update info cards
+            document.getElementById('fullNameDisplay').textContent = portfolioData.fullName || 'Not Set';
+            document.getElementById('ageInfoDisplay').textContent = portfolioData.age || 'Not Set';
+            document.getElementById('locationDisplay').textContent = portfolioData.location || 'Not Set';
+            document.getElementById('professionDisplay').textContent = portfolioData.title || 'Not Set';
+            
+            document.getElementById('emailDisplay').textContent = portfolioData.email || 'Not Set';
+            document.getElementById('phoneDisplay').textContent = portfolioData.phone || 'Not Set';
+            document.getElementById('websiteDisplay').textContent = portfolioData.website || 'Not Set';
+            document.getElementById('linkedinDisplay').textContent = portfolioData.linkedin || 'Not Set';
+            
+            document.getElementById('skillsDisplay').textContent = portfolioData.skills || 'Not Set';
+            document.getElementById('experienceDisplay').textContent = portfolioData.experience || 'Not Set';
+            document.getElementById('educationDisplay').textContent = portfolioData.education || 'Not Set';
+            document.getElementById('languagesDisplay').textContent = portfolioData.languages || 'Not Set';
+
+            // Update profile image with first letter of name
+            const profileImg = document.getElementById('profileDisplay');
+            if (portfolioData.fullName) {
+                profileImg.textContent = portfolioData.fullName.charAt(0).toUpperCase();
+            } else {
+                profileImg.textContent = '👤';
+            }
+        }
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all data?')) {
+                form.reset();
+                portfolioData = {};
+                updatePortfolioDisplay();
+                showNotification('All data cleared! 🗑️');
+            }
+        }
+
+        function loadSampleData() {
+            // Sample data for demonstration
+            document.getElementById('fullName').value = 'Kasun Perera';
+            document.getElementById('title').value = 'Full Stack Developer';
+            document.getElementById('age').value = '26';
+            document.getElementById('location').value = 'Colombo, Sri Lanka';
+            document.getElementById('email').value = 'kasun.perera@email.com';
+            document.getElementById('phone').value = '+94 77 123 4567';
+            document.getElementById('website').value = 'https://kasunperera.dev';
+            document.getElementById('linkedin').value = 'https://linkedin.com/in/kasunperera';
+            document.getElementById('skills').value = 'JavaScript, React, Node.js, Python, MongoDB';
+            document.getElementById('experience').value = '4+ years';
+            document.getElementById('education').value = 'BSc Computer Science, University of Colombo';
+            document.getElementById('languages').value = 'English, Sinhala, Tamil';
+            document.getElementById('bio').value = 'Passionate full-stack developer with 4+ years of experience building scalable web applications. I specialize in modern JavaScript frameworks and enjoy creating user-centric solutions that make a real impact. Always eager to learn new technologies and collaborate on innovative projects.';
+            
+            showNotification('Sample data loaded! Click Save to apply changes. 📝');
+        }
+
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize the portfolio display
+        updatePortfolioDisplay();
+    </script>
+</body>
+</html>
